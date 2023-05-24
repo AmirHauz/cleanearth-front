@@ -1,0 +1,3 @@
+<div *ngIf="loggedValue$ | async;else elseBlock">history logged</div>
+
+<ng-template #elseBlock>history not loged</ng-template>

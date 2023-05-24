@@ -1,0 +1,19 @@
+.app-nav-bar {
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+  z-index: 9999;
+}
+.ngb-toast{
+  position: fixed;
+  top: auto!important;
+  bottom: 0!important;
+  right: 0!important;
+  left: auto!important;
+  margin: 0.5em;
+    border: 2mm red;
+}
+.toast-container .toast {
+  top: 50px;
+  right: 20px;
+}

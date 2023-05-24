@@ -1,0 +1,3 @@
+<div *ngIf="loggedValue$ | async;else elseBlock">checkout logged</div>
+
+<ng-template #elseBlock>checkout not loged</ng-template>

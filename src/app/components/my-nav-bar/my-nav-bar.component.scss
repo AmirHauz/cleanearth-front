@@ -1,0 +1,47 @@
+nav {
+  background-color: #28a745; // Green color
+  height: 70px; // Set the height of the navbar
+  display: flex; // Add this to make the navbar items display in a horizontal line
+  justify-content: space-between; // Add this to evenly distribute the items horizontally
+  align-items: left; // Add this to vertically center the items
+}
+
+.nav-bar {
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0;
+  z-index: 9999;
+}
+
+nav .navbar-brand {
+  font-size: 1.5rem; // Set the font size of the brand
+  font-weight: bold; // Set the font weight of the brand
+}
+
+nav .nav-link {
+  font-size: 1.2rem; // Set the font size of the links
+  font-weight: bold; // Set the font weight of the links
+}
+
+nav .btn-secondary {
+  font-size: 1.2rem; // Set the font size of the button
+  font-weight: bold; // Set the font weight of the button
+}
+
+nav .nav-link:before,
+nav .btn-secondary:before {
+  font-family: FontAwesome; // Set the font family to FontAwesome for the icons
+  font-size: 1.5rem; // Set the font size of the icons
+  font-weight: normal; // Set the font weight of the icons
+  margin-right: 0.5rem; // Add some space between the icon and the text
+}
+
+nav .nav-link:hover,
+nav .nav-link.active,
+nav .btn-secondary:hover,
+nav .btn-secondary:active {
+  background-color: hsl(133, 61%, 33%); // Darker green color on hover or active
+}
+
+nav .marquee {
+  background-color: hsl(132, 53%, 17%);
+}
