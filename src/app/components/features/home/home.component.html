@@ -1,0 +1,22 @@
+<div *ngIf="loggedValue$ | async;else elseBlock"><h3>Hey {{userValue$|async }}</h3>
+  Welcome to cleanearth our purpose is to keep having nice trips and while doing it clean after us.<br>
+  We know that as a person who like to travel in nature it is important to us to protect the animals and landscape.<br>
+  Blablablablabla<br>
+  <br>
+
+  <h2>How we do it?</h2>
+  Upload a picture before clean and then picture after clean…<br/>
+  Our ai will calculate your score. With this score you can buy coupons in the shop.
+  </div>
+
+<ng-template #elseBlock>
+  Welcome to cleanearth our purpose is to keep having nice trips and while doing it clean after us.<br>
+  We know that as a person who like to travel in nature it is important to us to protect the animals and landscape.<br>
+  Blablablablabla<br>
+  <br>
+
+  <h2>How we do it?</h2>
+  Upload a picture before clean and then picture after clean…<br/>
+  Our ai will calculate your score. With this score you can buy coupons in the shop.<br><br>
+
+  <h1>to start do it please <a routerLink="/login">Log in</a> or <a routerLink="/signup">Register</a></h1></ng-template>

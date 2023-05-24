@@ -1,0 +1,53 @@
+h1 {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    margin-bottom: 1em;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+
+    input {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      font-size: 1em;
+    }
+
+    p {
+      color: red;
+      margin-top: 0.5em;
+      font-size: 0.8em;
+    }
+  }
+
+  button[type="submit"] {
+    margin-top: 1em;
+    padding: 0.5em;
+    font-size: 1em;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #0059b3;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}

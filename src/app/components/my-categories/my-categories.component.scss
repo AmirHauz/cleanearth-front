@@ -1,0 +1,50 @@
+.mainDisplay {
+  margin-top: 60px;
+}
+
+.sideBar {
+  position: fixed;
+  top: 90px;
+  left: -250px;
+  bottom: 0;
+  width: 15%;
+  height: 100%;
+  background-color:hsl(133, 24%, 85%);
+  transition: left 0.3s ease-out;
+  text-align: center;
+}
+
+.sideBar.open {
+  left: 0;
+}
+
+.sideBar ul {
+  list-style: none;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sideBar li {
+  margin-top: 0px;
+}
+
+.sideBar a {
+  display: block;
+  padding: 20px;
+  color: rgb(2, 2, 2);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sideBar a:hover {
+  background-color: rgb(160, 189, 180);
+  color: rgb(0, 0, 0);
+}
+
+.main{
+  margin: 140px auto;
+  height: 100%;
+  margin-left:20%;
+}
