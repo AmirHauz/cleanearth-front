@@ -1,4 +1,4 @@
-import { Component, OnInit, Input,ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { map, Observable, switchMap, take } from 'rxjs';
 import{ AuthService } from 'src/app/services/auth.service';
 import { FileUpload } from 'src/app/models/file-upload.model';
@@ -23,9 +23,7 @@ export class PhotoComponent implements OnInit {
   @ViewChild('imageTitleAfter') imageTitleAfter!: ElementRef;
   loggedValue$!: Observable<boolean>;
   userValue$!: Observable<string>;
-  imageUploaded = false;
-
-  @Input() userId: string = localStorage.getItem('userId') || '';
+  userId$!: Observable<number>;
   selectedFilesBefore?: FileList;
   selectedFilesAfter?: FileList;
   currentFileUpload?: FileUpload;
@@ -33,22 +31,25 @@ export class PhotoComponent implements OnInit {
   imageUrlBefore: any;
   imageUrlAfter:any;
   accessToken$!: Observable<string>;
-  constructor(private uploadService: FileUploadService,
+  imageUploadedBefore = false;
+  imageUploadedAfter = false;
+
+
+  constructor(
+    private uploadService: FileUploadService,
     private authService: AuthService,
-     private toastr: ToastrService) {
-    this.userId = ''
+    private toastr: ToastrService) {
   }
   ngOnInit(): void {
     this.loggedValue$ = this.authService.logged$;
     this.userValue$ = this.authService.userName$;
+    this.userId$ = this.authService.userId$
+
 
     this.authService.accessToken$.subscribe((token: string) => {
       console.log("Access token value photo:", token);
     });
   }
-
-
-
 
   readURL(input: any, imageType: string) {
     console.log("readURL function called");
@@ -72,7 +73,15 @@ export class PhotoComponent implements OnInit {
           this.imageUrlAfter = e.target.result;
           this.selectedFilesAfter = input.files;
         }
-        this.imageUploaded = true;
+        if (this.fileUploadContentBefore.nativeElement.style.display != ''){
+          this.imageUploadedBefore = true;
+        }
+        console.log("sanja")
+        console.log(this.fileUploadContentBefore.nativeElement.style.display)
+        console.log(this.fileUploadContentAfter.nativeElement.style.display)
+        if (this.fileUploadContentAfter.nativeElement.style.display != ''){
+          this.imageUploadedAfter = true;
+        }
       };
       reader.readAsDataURL(input.files[0]); // Invoke the reader to read the file data
     }
@@ -81,28 +90,31 @@ export class PhotoComponent implements OnInit {
 
   upload(): void {
     console.log("upload called");
-    if (this.selectedFilesBefore && this.selectedFilesBefore.length > 0) {
-      const file: File | null = this.selectedFilesBefore.item(0);
+    if (this.selectedFilesBefore && this.selectedFilesBefore.length > 0 &&
+      this.selectedFilesAfter && this.selectedFilesAfter.length > 0) {
+      const fileBefore: File | null = this.selectedFilesBefore.item(0);
+      const fileAfter: File | null = this.selectedFilesAfter.item(0);
+      console.log("fileBefore in component!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:", fileBefore)
+      console.log("fileAfter in component!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:", fileAfter)
+
       this.selectedFilesBefore = undefined;
-      // this.accessToken$.pipe(
-      //   take(1),
-      //   switchMap(token => {
 
-      //     return this.profileService.profile(
-      //       userId,
-      //       this.profileForm.get('fullName')?.value,
-      //       this.profileForm.get('aboutMe')?.value,
-      //       this.profileForm.get('dateOfBirth')?.value,
-      //       token
-
-      //     );
-      //   })
-      if (file) {
+      if (fileBefore && fileAfter) {
+        let userId: number;
+            this.userId$.pipe(
+              take(1)
+            ).subscribe(id => {
+              userId = id;
+            });
         this.authService.accessToken$.pipe(
           take(1),
           switchMap((token: any) => {
-            const fileUpload = new FileUpload(file, this.userId);
-            return this.uploadService.pushFileToStorage(fileUpload, token);
+
+            const fileUploadBefore = new FileUpload(fileBefore, userId);
+            const fileUploadAfter = new FileUpload(fileAfter, userId);
+
+            
+            return this.uploadService.pushFileToStorage(fileUploadBefore, fileUploadAfter, token);
           })
         ).subscribe(
           (percentage: number | undefined) => {
@@ -134,7 +146,13 @@ export class PhotoComponent implements OnInit {
       this.fileUploadContentAfter.nativeElement.style.display = 'none';
       this.selectedFilesAfter = undefined;
     }
-    this.imageUploaded = false;
+    if (this.fileUploadContentBefore.nativeElement.style.display = 'none'){
+      this.imageUploadedBefore = false
+    }
+    if (this.fileUploadContentAfter.nativeElement.style.display = 'none'){
+      this.imageUploadedAfter = false
+    }
+
   }
   /////////////////////////////////////////
 

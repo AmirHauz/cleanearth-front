@@ -12,7 +12,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class MyNavBarComponent implements OnInit {
   counter = 0;
-  balance=0
+  balance=0;
   loggedValue$!: Observable<boolean>;
   userValue$!:Observable<string> ;
   tempBalance$!:Observable<number>;

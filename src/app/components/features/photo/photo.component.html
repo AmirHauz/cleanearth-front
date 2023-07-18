@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <button class="btn btn-success btn-sm" [disabled]="!imageUploaded" (click)="upload()">
+    <button class="btn btn-success btn-sm" [disabled]="!imageUploadedBefore || !imageUploadedAfter" (click)="upload()">
       Upload
     </button>
     <p>Upload progress: {{ percentage }}%</p>

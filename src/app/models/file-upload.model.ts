@@ -3,9 +3,9 @@ export class FileUpload {
   name!: string;
   url!: string;
   file: File;
-  userID! :string
+  userID! :number
 
-  constructor(file: File,userId:string) {
+  constructor(file: File, userId:number) {
     this.file = file;
     this.userID = userId
   }

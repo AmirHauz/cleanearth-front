@@ -1,10 +1,12 @@
 <!-- **********************************************logged: ***********************************************************************-->
 
 <div *ngIf="loggedValue$ | async; else elseBlock">
-  profile logged userid is: {{userId$|async}}
+  <h1>Profile</h1>
+  Your userId is: {{userId$|async}}
+<hr>
   <form [formGroup]="profileForm" (ngSubmit)="save()">
     <div>
-      <div>full Name:</div>
+      <div>Full name:</div>
       <div>
         <input type="text" formControlName="fullName" [value]="(profile$ | async)?.fullName">
 
@@ -12,14 +14,14 @@
     </div>
 
     <div>
-      <div>about me:</div>
+      <div>About me:</div>
       <div>
         <textarea rows="5" cols="40" formControlName="aboutMe" [value]="(profile$ | async)?.aboutMe" ></textarea>
       </div>
     </div>
 
     <div>
-      <div>date of birth:</div>
+      <div>Date of birth:</div>
       <div>
         <input type="date" formControlName="dateOfBirth" [value]="(profile$ | async)?.dateOfBirth">
       </div>
@@ -33,4 +35,4 @@
 </div>
 <!-- **********************************************not logged: ***********************************************************************-->
 
-<ng-template #elseBlock>profile not loged</ng-template>
+<ng-template #elseBlock>Please Log In</ng-template>

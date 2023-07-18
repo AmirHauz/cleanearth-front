@@ -80,3 +80,10 @@ form .ng-invalid{
   outline:none;
   border: 2px solid red;
 }
+
+button {
+  background: #1AA059;
+  color: #ffffff;
+  transition: all .2s ease;
+  cursor: pointer;
+}
