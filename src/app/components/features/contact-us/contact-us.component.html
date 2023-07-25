@@ -1,1 +1,25 @@
-<p>contact-us works!</p>
+<div *ngIf="loggedValue$ | async;else elseBlock">
+<div class="container">
+  <h2 class="text-center mb-5">Angular Contact Form Hosted On FireBase</h2>
+  <div class="row">
+  <div class="col-md-6 offset-md-3">
+  <form [formGroup]="FormData" (ngSubmit)="onSubmit(FormData.value)"><div class="form-group">
+  <label for="reason">Reason</label>
+  <input type="email" class="form-control" name="reason" aria-describedby="emailHelp" placeholder="Enter email"formControlName="reason">
+  <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+  <label for="comment">Comment</label>
+  <textarea class="form-control" formControlName="Comment" name="Comment">
+  </textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" [disabled]="!FormData.valid">Submit</button>
+  </form>
+  </div>
+  </div>
+  </div>
+</div>
+<ng-template #elseBlock>
+<p>contact-us works but user is not logged!</p>
+</ng-template>
+

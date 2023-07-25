@@ -13,8 +13,8 @@ import { AuthService } from '../../../services/auth.service';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   error!: string;
-  success!: string;
-  loggedValue$!: Observable<boolean>;
+  success!: string ;
+  loggedValue$!: Observable<boolean> ;
   userValue$!:Observable<string> ;
   userId$!:Observable<number>;
 

@@ -113,7 +113,7 @@ export class PhotoComponent implements OnInit {
             const fileUploadBefore = new FileUpload(fileBefore, userId);
             const fileUploadAfter = new FileUpload(fileAfter, userId);
 
-            
+
             return this.uploadService.pushFileToStorage(fileUploadBefore, fileUploadAfter, token);
           })
         ).subscribe(
@@ -122,6 +122,10 @@ export class PhotoComponent implements OnInit {
               this.percentage = Math.round(percentage);
               if (this.percentage === 100) {
                 this.toastr.success('Upload successful', 'Success', { timeOut: 3000 });
+
+                // Refresh the app after successful upload
+                window.location.reload();
+
               }
             }
           },

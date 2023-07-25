@@ -17,11 +17,11 @@ export class MyHistoryComponent implements AfterViewInit{
   loggedValue$!: Observable<boolean>;
   userId$!: Observable<number>;
   accessToken$!: Observable<string>;
-  cleaningHistory$!: Observable<HistoryCleaningAction>;
+  cleaningHistory$!: Observable<HistoryCleaningAction[]>;
 
 
   displayedColumns: string[] = ['beforePicture', 'afterPicture', 'score', 'date'];
-  dataSource!: MatTableDataSource<HistoryCleaningAction>;
+  dataSource = new MatTableDataSource<HistoryCleaningAction>([]); 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -52,17 +52,21 @@ export class MyHistoryComponent implements AfterViewInit{
 
       // Subscribe to the profileParams$ observable and retrieve the values
       cleaningActionParams$.subscribe(([userId, accessToken]) => {
-      this.cleaningHistory$ = this.fileUploadService.getFilesByUserId(userId, accessToken);
+        this.cleaningHistory$ = this.fileUploadService.getFilesByUserId(
+          userId,
+          accessToken
+        );
 
-      this.cleaningHistory$.subscribe((cleaningAction: any) => {
-        console.log('picture before:', cleaningAction[0].beforePicture);
-        console.log('picture after cleaning:', cleaningAction[0].afterPicture);
-        console.log('score:', cleaningAction[0].score);
-        console.log('date of upload', cleaningAction[0].date)
-      })
-      console.log("this is what we get hereeeeeeee:", this.cleaningHistory$)
-    });
-
+        this.cleaningHistory$.subscribe(
+          (cleaningActions: HistoryCleaningAction[]) => {
+            console.log('Cleaning Actions:', cleaningActions); // Check if data is coming from the server
+            this.dataSource.data = cleaningActions; // Assign the data to the dataSource directly
+          },
+          (error) => {
+            console.log('Error fetching cleaning history:', error);
+          }
+        );
+      });
     }
     applyFilter(event: Event) {
       const filterValue = (event.target as HTMLInputElement).value;

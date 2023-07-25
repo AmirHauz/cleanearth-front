@@ -26,14 +26,23 @@ export class MyNavBarComponent implements OnInit {
   ngOnInit(): void {
     this.loggedValue$= this.authService.logged$;
     console.log(this.loggedValue$);
-    this.userValue$= this.authService.userName$
-      console.log(this.userValue$);
+   // Retrieve the user's name from local storage
+   const storedUsername = localStorage.getItem('username');
+   if (storedUsername) {
+     this.userValue$ = new Observable<string>((observer) => {
+       observer.next(storedUsername);
+     });
+   } else {
+     this.userValue$ = this.authService.userName$;
+   }
+
       this.tempBalance$ = this.balanceService.tempBalance$
   }
   logout() {
     // Logout functionality
     console.log("logout pressed")
     this.authService.logout()
+
   }
 }
 
