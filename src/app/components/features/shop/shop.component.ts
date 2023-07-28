@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
-import { Observable, switchMap, take } from 'rxjs';
+import { map, Observable, switchMap, take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ShopService } from 'src/app/services/shop.service';
-
+import { BalanceService } from 'src/app/services/balance.service';
+import { Balance } from 'src/app/models/balance.model ';
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent {
- 
-  balance = 1100;
+
+
 
   loggedValue$!: Observable<boolean>;
-  cupons:any[]=[]
+  balance$!: Observable<number>;
+  tempBalance$!: Observable<number>;
+  cupons:any[]=[];
   accessToken$!: Observable<string>;
   constructor(
 
+    private balanceService : BalanceService,
     private authService : AuthService,
     private shopService:ShopService
     ) {   }
@@ -24,14 +28,30 @@ export class ShopComponent {
     ngOnInit(): void {
       this.loggedValue$= this.authService.logged$;
       this.accessToken$ = this.authService.accessToken$;
+
+      this.balanceService.getBalance(this.accessToken$).subscribe(
+        (balance: Balance) => {
+          this.balanceService.updateBalance(balance.balance);
+          this.balanceService.updateTempBalance(balance.tempBalance);
+          console.log("Response for balance:", balance.balance);
+        },
+        (error) => {
+          console.error("Error occurred while fetching balance:", error);
+        }
+      );
+
+      this.balance$ = this.balanceService.balance$;
+      this.tempBalance$ = this.balanceService.tempBalance$;
+
       this.shopService.getrewards(this.accessToken$).subscribe(
         (response) => {
           this.cupons = response;
-          console.log(this.cupons);
+          // console.log(this.cupons);
         },
         (error) => {
-          console.error(error);
+          // console.error(error);
         }
       );
+
       }
     }

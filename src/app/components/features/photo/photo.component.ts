@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { map, Observable, switchMap, take } from 'rxjs';
+import { finalize, map, Observable, switchMap, take } from 'rxjs';
 import{ AuthService } from 'src/app/services/auth.service';
 import { FileUpload } from 'src/app/models/file-upload.model';
 import { FileUploadService } from 'src/app/services/file-upload.service';
 import * as $ from "jquery";
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-photo',
@@ -38,7 +39,8 @@ export class PhotoComponent implements OnInit {
   constructor(
     private uploadService: FileUploadService,
     private authService: AuthService,
-    private toastr: ToastrService) {
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef) {
   }
   ngOnInit(): void {
     this.loggedValue$ = this.authService.logged$;
@@ -87,6 +89,12 @@ export class PhotoComponent implements OnInit {
     }
   }
 
+  resetImageProperties() {
+    this.imageUrlBefore = undefined;
+    this.imageUrlAfter = undefined;
+    this.imageUploadedBefore = false;
+    this.imageUploadedAfter = false;
+  }
 
   upload(): void {
     console.log("upload called");
@@ -94,25 +102,24 @@ export class PhotoComponent implements OnInit {
       this.selectedFilesAfter && this.selectedFilesAfter.length > 0) {
       const fileBefore: File | null = this.selectedFilesBefore.item(0);
       const fileAfter: File | null = this.selectedFilesAfter.item(0);
-      console.log("fileBefore in component!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:", fileBefore)
-      console.log("fileAfter in component!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:", fileAfter)
+      console.log("fileBefore in component:", fileBefore);
+      console.log("fileAfter in component:", fileAfter);
 
       this.selectedFilesBefore = undefined;
 
       if (fileBefore && fileAfter) {
         let userId: number;
-            this.userId$.pipe(
-              take(1)
-            ).subscribe(id => {
-              userId = id;
-            });
+        this.userId$.pipe(
+          take(1)
+        ).subscribe(id => {
+          userId = id;
+        });
+
         this.authService.accessToken$.pipe(
           take(1),
           switchMap((token: any) => {
-
             const fileUploadBefore = new FileUpload(fileBefore, userId);
             const fileUploadAfter = new FileUpload(fileAfter, userId);
-
 
             return this.uploadService.pushFileToStorage(fileUploadBefore, fileUploadAfter, token);
           })
@@ -122,10 +129,13 @@ export class PhotoComponent implements OnInit {
               this.percentage = Math.round(percentage);
               if (this.percentage === 100) {
                 this.toastr.success('Upload successful', 'Success', { timeOut: 3000 });
-
-                // Refresh the app after successful upload
-                window.location.reload();
-
+                // Clear the selected files and reset image previews
+                this.selectedFilesBefore = undefined;
+                this.selectedFilesAfter = undefined;
+                this.imageUploadWrapBefore.nativeElement.value = '';
+                this.imageUploadWrapAfter.nativeElement.value = '';
+                this.fileUploadContentBefore.nativeElement.style.display = 'none';
+                this.fileUploadContentAfter.nativeElement.style.display = 'none';
               }
             }
           },
@@ -136,6 +146,8 @@ export class PhotoComponent implements OnInit {
       }
     }
   }
+
+
 
   //////////////for the green add photo boxes:
 

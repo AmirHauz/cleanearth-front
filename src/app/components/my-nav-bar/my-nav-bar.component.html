@@ -24,22 +24,15 @@
   </ul>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item mr-3">
-      <a
-        class="nav-link"
-        *ngIf="balance>0; else noBalance"
-      >
-        <span
-          class="material-icons"
-          matBadge="{{ tempBalance$|async }}"
-          matBadgePosition="before"
-          matBadgeColor="accent"
-          >savings</span
-        >
+      <a class="nav-link" *ngIf="tempBalance > 0; else noBalance">
+        <span class="material-icons" matBadge="{{ tempBalance }}" matBadgePosition="before" matBadgeColor="accent">
+          savings
+        </span>
       </a>
       <ng-template #noBalance>
-        <a class="nav-link"
-          ><span class="material-icons">savings</span></a
-        >
+        <a class="nav-link">
+          <span class="material-icons">savings</span>
+        </a>
       </ng-template>
     </li>
     <li class="nav-item mr-3">
