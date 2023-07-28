@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError, Subject, forkJoin } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
-import jwt_decode from 'jwt-decode';
-import { Token } from '@angular/compiler';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
-import { StorageService } from 'angular-webstorage-service';
+import { Observable, BehaviorSubject, throwError,  forkJoin } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
 
 interface AuthResponse {
   access: string;
@@ -45,7 +42,6 @@ export class AuthService {
   }
 
   get accessToken$():Observable<string>{
-    console.log("acceess token in service auth",this.accessTokenSubject.asObservable())
     return this.accessTokenSubject.asObservable();
   }
 
@@ -54,8 +50,8 @@ export class AuthService {
 
     this.accessTokenSubject.subscribe(token => {
       console.log('AccessTokenSubject value:', token);
+      this.loggedSubject.next(!!token);
     });
-
   }
 
   private getAccessToken(): string  {
@@ -68,6 +64,10 @@ export class AuthService {
     this.accessTokenSubject.next(token);
   }
 
+  private setUserName(username: string): void {
+    localStorage.setItem('username', username);
+    this.userNameSubject.next(username);
+  }
   private getRefreshToken(): string {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY) ?? "";
   }
@@ -75,11 +75,13 @@ export class AuthService {
   private setRefreshToken(token: string): void {
     localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
 
+
   }
 
   private clearTokens(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem('username');
     // this.accessTokenSubject.next("");
     this.loggedSubject.next(false)
     this.userNameSubject.next("")
@@ -106,8 +108,10 @@ export class AuthService {
         console.log('Login response:', response); // Add this line
         this.setAccessToken(response.access);
         this.setRefreshToken(response.refresh);
-        this.loggedSubject.next(!this.loggedSubject.value);
+        this.loggedSubject.next(true);
         this.userNameSubject.next(username);
+        // Store the username in local storage
+        this.setUserName(username);
       }),
       catchError(error => throwError(error))
     );
@@ -129,6 +133,7 @@ export class AuthService {
 }
   public logout(): void {
     this.clearTokens();
+    this.userNameSubject.next("");
     this.loggedSubject.next(false)
   }
 

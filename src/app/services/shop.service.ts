@@ -8,6 +8,7 @@ import { Observable, switchMap } from 'rxjs';
 export class ShopService {
 
   private readonly MYSERVER = 'http://127.0.0.1:8000/rewards/';
+
   constructor(private http: HttpClient) { }
 
   getrewards(token$: Observable<string>) {

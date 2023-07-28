@@ -1,9 +1,10 @@
 import { Injectable,Component } from '@angular/core';
 import { FileUpload } from '../models/file-upload.model';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormGroup, FormControl, Validators} from '@angular/forms';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 
 import { finalize } from 'rxjs/operators';
 
@@ -27,52 +28,75 @@ export class FileUploadService {
   ){ }
 
 
-  pushFileToStorage(fileUpload: FileUpload,token: string): Observable<number | undefined> {
+  pushFileToStorage(fileUploadBefore: FileUpload, fileUploadAfter: FileUpload, token: string): Observable<number | undefined> {
     // implement calling
-    const filePath = `${this.basePath}/${fileUpload.file.name}`;
-    const storageRef = this.storage.ref(filePath);
-    const uploadTask = this.storage.upload(filePath, fileUpload.file);
-    const userId: string = localStorage.getItem('userId') || '';
+    const fileBeforePath = `${this.basePath}/${fileUploadBefore.file.name}`;
+    const storageRef = this.storage.ref(fileBeforePath);
+    const uploadTaskBefore = this.storage.upload(fileBeforePath, fileUploadBefore.file);
 
+    const fileAfterPath = `${this.basePath}/${fileUploadAfter.file.name}`;
+    const storageRefAfter = this.storage.ref(fileAfterPath);
+    const uploadTaskAfter = this.storage.upload(fileAfterPath, fileUploadAfter.file);
 
-    uploadTask.snapshotChanges().pipe(
+    uploadTaskBefore.snapshotChanges().pipe(
       finalize(() => {
         storageRef.getDownloadURL().subscribe(downloadURL => {
-          fileUpload.url = downloadURL;
-          fileUpload.name = fileUpload.file.name;
-          fileUpload.userID = fileUpload.userID
+          console.log(downloadURL)
+          fileUploadBefore.name = fileUploadBefore.file.name;
+          fileUploadBefore.url = downloadURL;
 
-          this.saveFileData(fileUpload, token).subscribe(response => {
-            console.log('File uploaded successfully');
-          }, error => {
-            console.log('Error uploading file:', error);
-          });
+          uploadTaskAfter.snapshotChanges().pipe(
+            finalize(() => {
+              storageRefAfter.getDownloadURL().subscribe(downloadURL => {
+                console.log(downloadURL)
+                fileUploadAfter.name = fileUploadAfter.file.name;
+                fileUploadAfter.url = downloadURL;
+
+                this.saveFileData(fileUploadBefore, fileUploadAfter, token).subscribe(response => {
+                  console.log('File uploaded successfully');
+                }, error => {
+                  console.log('Error uploading file:', error);
+                });
+
+              });
+            })
+          ).subscribe();
+
         });
       })
     ).subscribe();
 
-    return uploadTask.percentageChanges();
+    return uploadTaskAfter.percentageChanges();
   }
 
-  private saveFileData(fileUpload: FileUpload, token: string): Observable<any> {
+  private saveFileData(fileUploadBefore: FileUpload, fileUploadAfter: FileUpload, token: string): Observable<any> {
     console.log("the token in the service is: ", token);
     const url = `${this.MYSERVER}`;
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
-    console.log("file", fileUpload.file)
-    console.log("key", fileUpload.key)
-    console.log("name", fileUpload.name)
-    console.log("url", fileUpload.url)
-    console.log("userID", fileUpload.userID)
-    return this.http.post(url, fileUpload, { headers: headers });
+    console.log("name", fileUploadBefore.name)
+    console.log("url", fileUploadBefore.url)
+    console.log("userID", fileUploadBefore.userID)
+    const body = {
+      user: fileUploadBefore.userID,
+      beforePicture: fileUploadBefore.url,
+      afterPicture: fileUploadAfter.url,
+    }
+    return this.http.post(url, body, { headers: headers });
   }
 
 
-
-  getFilesByUserId(userId: string,numberItems: number): any {
+  getFilesByUserId(userId: number, token: string): any {
     // return this.db.list(this.basePath, ref =>
     //   ref.orderByChild('userID').equalTo(userId).limitToLast(numberItems));
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    return this.http.get(`${this.MYSERVER}`, { headers: headers }).pipe(
+      catchError(error => throwError(error))
+    );
   }
 
   deleteFile(fileUpload: FileUpload): void {

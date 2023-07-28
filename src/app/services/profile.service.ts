@@ -12,17 +12,18 @@ export class ProfileService {
   constructor(private http: HttpClient) { }
 
 
-  public profile(userId: number, fullName: string, aboutMe: string, dateOfBirth: string, token: string): Observable<any> {
+  public profile(user: number, fullName: string, aboutMe: string, dateOfBirth: string, token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
-    const data = { userId, fullName, aboutMe, dateOfBirth };
+    const data = {fullName, aboutMe, dateOfBirth };
 
-    console.log("user id is : ", userId)
-    return this.http.put(`${this.MYSERVER}${userId}`, data, { headers: headers }).pipe(
+    console.log("user id is : ", user)
+    return this.http.put(`${this.MYSERVER}${user}`, data, { headers: headers }).pipe(
       catchError(error => throwError(error))
     );
   }
+  
   public getProfile(userId: number,token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
