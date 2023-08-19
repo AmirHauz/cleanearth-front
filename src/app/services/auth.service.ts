@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError,  forkJoin } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-
+import { catchError, tap, map } from 'rxjs/operators';
+import { Balance } from 'src/app/models/balance.model ';
+import { BalanceSharedService } from 'src/app/services/balance-shared.service';
+import { BalanceService } from 'src/app/services/balance.service';
 
 interface AuthResponse {
   access: string;
@@ -12,6 +14,7 @@ interface AuthResponse {
 interface UserDetailsResponse {
   id: number;
   username: string;
+  email:string
 }
 
 @Injectable({
@@ -26,7 +29,10 @@ export class AuthService {
 
   private loggedSubject = new BehaviorSubject<boolean>(false);
   private userNameSubject = new BehaviorSubject<string>("");
+  private userEmailSubject = new BehaviorSubject<string>("");
   private userIdSubject = new BehaviorSubject<number>(1);
+  balance$!: Observable<number>;
+  tempBalance$!: Observable<number>;
 
 
   get logged$():Observable<boolean>{
@@ -37,6 +43,10 @@ export class AuthService {
     return this.userNameSubject.asObservable();
   }
 
+  get userEmail$():Observable<string>{
+    return this.userEmailSubject.asObservable();
+  }
+
   get userId$():Observable<number>{
     return this.userIdSubject.asObservable();
   }
@@ -45,13 +55,17 @@ export class AuthService {
     return this.accessTokenSubject.asObservable();
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private balanceService : BalanceService,
+    private balanceSharedService: BalanceSharedService
+    ) {
     this.accessTokenSubject.next(this.getAccessToken());
 
     this.accessTokenSubject.subscribe(token => {
       console.log('AccessTokenSubject value:', token);
       this.loggedSubject.next(!!token);
     });
+
   }
 
   private getAccessToken(): string  {
@@ -68,26 +82,29 @@ export class AuthService {
     localStorage.setItem('username', username);
     this.userNameSubject.next(username);
   }
+
+  private setUserEmail(email: string): void {
+    localStorage.setItem('email', email);
+    this.userEmailSubject.next(email);
+  }
+
   private getRefreshToken(): string {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY) ?? "";
   }
 
   private setRefreshToken(token: string): void {
     localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
-
-
   }
 
   private clearTokens(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem('username');
+    localStorage.removeItem('email');
     // this.accessTokenSubject.next("");
     this.loggedSubject.next(false)
     this.userNameSubject.next("")
     }
-
-
 
   public register(username: string, email:string, password: string): Observable<any> {
     const url = `${this.MYSERVER}/register/`;
@@ -112,6 +129,7 @@ export class AuthService {
         this.userNameSubject.next(username);
         // Store the username in local storage
         this.setUserName(username);
+        console.log("sanja " + this.accessToken$);
       }),
       catchError(error => throwError(error))
     );
@@ -119,23 +137,40 @@ export class AuthService {
   const userDetails = this.http.get<UserDetailsResponse>(this.MYSERVER + '/userDetail/' + username).pipe(
     tap(response => {
       this.userIdSubject.next(response.id);
+      this.setUserEmail(response.email); // Store the email in local storage
     }),
     catchError(error => throwError(error))
   );
 
-  return forkJoin([loginResponse, userDetails]).pipe(
-    tap(([response, userDetails]) => {
-      console.log('Authentication response:', response);
-      console.log('User details:', userDetails);
+  return forkJoin({ loginResponse, userDetails }).pipe(
+    map(result => {
+      console.log('Authentication response:', result.loginResponse);
+      console.log('User details: auth service', result.userDetails);
+      return result; // Return the result object with loginResponse and userDetails
     }),
     catchError(error => throwError(error))
   );
 }
-  public logout(): void {
-    this.clearTokens();
-    this.userNameSubject.next("");
-    this.loggedSubject.next(false)
-  }
+
+public getAllDetails() {
+  this.balanceService.getBalance(this.accessToken$).subscribe(
+    (balance: Balance) => {
+      this.balanceSharedService.updateBalance(balance.balance);
+      this.balanceSharedService.updateTempBalance();
+      console.log("Response for balance:", balance.balance);
+    },
+    (error) => {
+      console.error("Error occurred while fetching balance:", error);
+    }
+  );
+}
+
+public logout(): void {
+  this.clearTokens();
+  this.userNameSubject.next("");
+  this.userEmailSubject.next("");
+  this.loggedSubject.next(false)
+}
 
   // public isLoggedIn(): boolean {
   //   const token = this.getAccessToken();

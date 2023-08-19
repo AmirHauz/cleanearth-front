@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ContactService } from 'src/app/services/contact.service';
 import { Reason } from 'src/app/models/reason.model';
+import emailjs from '@emailjs/browser';
+import { async } from '@firebase/util';
 
 
 
@@ -18,6 +20,7 @@ export class ContactUsComponent {
   loggedValue$!: Observable<boolean>;
   accessToken$!: Observable<string>;
   selectedValue!: string;
+  userEmailValue$!: Observable<string>;
 
   constructor(
     private builder: FormBuilder,
@@ -34,13 +37,31 @@ export class ContactUsComponent {
 
 
   ngOnInit(): void {
+    this.userEmailValue$= this.authService.userEmail$
+
     this.FormData = this.builder.group({
       reason: new FormControl('', ),
-      Comment: new FormControl('', [Validators.required])
+      comment: new FormControl('', [Validators.required])
     });
 
     this.loggedValue$ = this.authService.logged$;
     this.accessToken$ = this.authService.accessToken$;
+  }
+  async send() {
+    this.userEmailValue$.pipe(take(1)).subscribe(email => {
+      emailjs.send("service_ate8zbo", "template_p2qnvsj", {
+        email: email,
+        reason: this.FormData.value.reason,
+        comment: this.FormData.value.comment,
+      }, "CIEQcMok4YL2ZNHvO")
+      .then((response) => {
+        alert('message has been sent.');
+        this.FormData.reset();
+      })
+      .catch((error) => {
+        console.error('Error sending email:', error);
+      });
+    });
   }
 
   onSubmit(FormData: any) {
@@ -57,3 +78,4 @@ export class ContactUsComponent {
     }
   }
 }
+

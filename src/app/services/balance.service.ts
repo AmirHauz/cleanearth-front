@@ -1,44 +1,41 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, throwError, Subject, switchMap } from 'rxjs';
+import { Observable, throwError, switchMap, tap, catchError } from 'rxjs';
 import { Balance } from '../models/balance.model ';
+import { BalanceSharedService } from './balance-shared.service';
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BalanceService {
-private readonly MYSERVER = 'http://127.0.0.1:8000/balance/'
+  private readonly MYSERVER = 'http://127.0.0.1:8000/balance/';
 
-private balanceSubject = new BehaviorSubject<number>(0);
-private tempBalanceSubject = new BehaviorSubject<number>(0);
+  constructor(
+    private http: HttpClient,
+    private balanceSharedService: BalanceSharedService
+  ) {}
 
-constructor(private http: HttpClient) { }
+  getBalance(token$: Observable<string>): Observable<Balance> {
+    return token$.pipe(
+      switchMap((token) => {
+        const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
+        return this.http.get<Balance>(this.MYSERVER, { headers }).pipe(
+          tap((balance: Balance) => {
+            this.updateBalances(balance.balance, balance.tempBalance);
+            console.log('Response for balance:', balance.balance);
+          }),
+          catchError((error) => {
+            console.error('Error occurred while fetching balance:', error);
+            return throwError(error);
+          })
+        );
+      })
+    );
+  }
 
+  private updateBalances(balance: number, tempBalance: number): void {
+    this.balanceSharedService.updateBalance(balance);
+    this.balanceSharedService.updateTempBalance();
 
-get balance$(): Observable<number> {
-  return this.balanceSubject.asObservable();
-}
-
-get tempBalance$(): Observable<number> {
-  return this.tempBalanceSubject.asObservable();
-}
-
-updateBalance(balance: number): void {
-  this.balanceSubject.next(balance);
-}
-
-
-updateTempBalance(tempBalance: number): void {
-  this.tempBalanceSubject.next(tempBalance);
-}
-
-getBalance(token$: Observable<string>): Observable<Balance> {
-  return token$.pipe(
-    switchMap(token => {
-      const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
-      return this.http.get<Balance>(this.MYSERVER, { headers });
-    })
-  );
-}
-
-
+  }
 }

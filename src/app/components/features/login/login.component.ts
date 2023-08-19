@@ -36,17 +36,19 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginSubmit() {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid  ) {
       return;
     }
 
     const username = this.loginForm.get('username')?.value;
     const password = this.loginForm.get('password')?.value;
 
-    this.authService.login(username, password).subscribe(([response, userDetails]) => {
-      console.log('Authentication response:', response);
-      console.log('User details:', userDetails);
+    this.authService.login(username, password).subscribe(result => {
+      console.log('Authentication response:', result.loginResponse);
+      console.log('User details: login component ', result.userDetails);
+      this.authService.getAllDetails();
+
       this.router.navigate(['/home']);
     });
-}
+  }
 }

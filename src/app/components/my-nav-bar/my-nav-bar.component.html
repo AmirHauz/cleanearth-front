@@ -25,7 +25,7 @@
   <ul class="navbar-nav ml-auto">
     <li class="nav-item mr-3">
       <a class="nav-link" *ngIf="tempBalance > 0; else noBalance">
-        <span class="material-icons" matBadge="{{ tempBalance }}" matBadgePosition="before" matBadgeColor="accent">
+        <span class="material-icons" matBadge="{{ tempBalance$ | async }}" matBadgePosition="before" matBadgeColor="accent">
           savings
         </span>
       </a>
@@ -82,4 +82,8 @@ onmouseover="stop()"
 onmouseout="start()"
 behavior="scroll"
 >hey {{ userValue$ | async }} news especially for you: new cupon
-blablabla</marquee>
+blabla </marquee>
+
+
+
+

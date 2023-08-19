@@ -40,7 +40,9 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatSelectModule} from'@angular/material/select'
+import {MatSelectModule} from'@angular/material/select';
+import { BalanceService } from './services/balance.service';
+import { BalanceSharedService } from './services/balance-shared.service';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,7 @@ import {MatSelectModule} from'@angular/material/select'
     MyFooterComponent,
     MyNavBarComponent,
     BalanceComponent,
+
 
 
   ],
@@ -90,7 +93,7 @@ import {MatSelectModule} from'@angular/material/select'
     MatPaginatorModule,
     MatSelectModule,
   ],
-  providers: [HttpClient,],
+  providers: [HttpClient,BalanceService,BalanceSharedService],
   bootstrap: [AppComponent,MyCategoriesComponent]
 })
 export class AppModule { }

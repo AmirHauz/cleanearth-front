@@ -1,5 +1,7 @@
 <div *ngIf="loggedValue$ | async;else elseBlock">
 logged
+
+
   <ng-container *ngFor="let item of cupons">
     <div class="card-group">
         <div class="card">
@@ -14,9 +16,13 @@ logged
                 </small>
                 <div class="example-button-container">
 
-                  <button mat-mini-fab color="accent" type="submit" disableRipple="" [disabled]="item.cuponPrice > balance$">
+                  <button mat-mini-fab color="accent" type="submit" disableRipple="" [disabled]="item.cuponPrice > (tempBalance$ | async)!">
                     <mat-icon ripple="">add_shopping_cart</mat-icon>
-                  </button>
+                </button>
+
+
+
+
                 </div>
               </div>
 </div>
