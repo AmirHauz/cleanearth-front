@@ -68,6 +68,8 @@ export class AuthService {
 
   }
 
+
+
   private getAccessToken(): string  {
     return localStorage.getItem(this.ACCESS_TOKEN_KEY) ?? "";
   }
@@ -155,8 +157,8 @@ export class AuthService {
 public getAllDetails() {
   this.balanceService.getBalance(this.accessToken$).subscribe(
     (balance: Balance) => {
-      this.balanceSharedService.updateBalance(balance.balance);
-      this.balanceSharedService.updateTempBalance();
+      // this.balanceSharedService.updateBalance(balance.balance);
+      // this.balanceSharedService.updateTempBalance(0);
       console.log("Response for balance:", balance.balance);
     },
     (error) => {

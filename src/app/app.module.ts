@@ -43,6 +43,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from'@angular/material/select';
 import { BalanceService } from './services/balance.service';
 import { BalanceSharedService } from './services/balance-shared.service';
+import { TransactionComponent } from './components/features/transaction/transaction.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { BalanceSharedService } from './services/balance-shared.service';
     MyFooterComponent,
     MyNavBarComponent,
     BalanceComponent,
+    TransactionComponent,
 
 
 

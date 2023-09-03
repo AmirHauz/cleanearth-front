@@ -84,6 +84,7 @@ export class FileUploadService {
       afterPicture: fileUploadAfter.url,
     }
     return this.http.post(url, body, { headers: headers });
+    
   }
 
 

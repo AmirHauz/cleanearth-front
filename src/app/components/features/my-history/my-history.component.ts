@@ -21,7 +21,7 @@ export class MyHistoryComponent implements AfterViewInit{
 
 
   displayedColumns: string[] = ['beforePicture', 'afterPicture', 'score', 'date'];
-  dataSource = new MatTableDataSource<HistoryCleaningAction>([]); 
+  dataSource = new MatTableDataSource<HistoryCleaningAction>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -39,7 +39,7 @@ export class MyHistoryComponent implements AfterViewInit{
       this.loggedValue$= this.authService.logged$;
       this.accessToken$ = this.authService.accessToken$;
       this.userId$ = this.authService.userId$
-
+      this.authService.getAllDetails();
 
       // this.accessToken$.pipe(
       //   map((tokenObj: any) => tokenObj.token)

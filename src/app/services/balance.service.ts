@@ -8,7 +8,7 @@ import { BalanceSharedService } from './balance-shared.service';
   providedIn: 'root',
 })
 export class BalanceService {
-  private readonly MYSERVER = 'http://127.0.0.1:8000/balance/';
+  private readonly MYSERVER = 'http://127.0.0.1:8000/';
 
   constructor(
     private http: HttpClient,
@@ -19,10 +19,11 @@ export class BalanceService {
     return token$.pipe(
       switchMap((token) => {
         const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
-        return this.http.get<Balance>(this.MYSERVER, { headers }).pipe(
+        return this.http.get<Balance>(this.MYSERVER + "balance/", { headers }).pipe(
           tap((balance: Balance) => {
-            this.updateBalances(balance.balance, balance.tempBalance);
+            this.updateBalances(balance.balance, balance.cartTotal);
             console.log('Response for balance:', balance.balance);
+            console.log('Response for CARTTOTAL', balance.cartTotal);
           }),
           catchError((error) => {
             console.error('Error occurred while fetching balance:', error);
@@ -33,9 +34,10 @@ export class BalanceService {
     );
   }
 
-  private updateBalances(balance: number, tempBalance: number): void {
+
+  private updateBalances(balance: number, cartTotal: number): void {
     this.balanceSharedService.updateBalance(balance);
-    this.balanceSharedService.updateTempBalance();
+    this.balanceSharedService.updateTempBalance(cartTotal);
 
   }
 }

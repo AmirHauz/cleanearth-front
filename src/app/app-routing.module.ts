@@ -11,6 +11,7 @@ import { PhotoComponent } from './components/features/photo/photo.component';
 import { ProfileComponent } from './components/features/profile/profile.component';
 import { RegisterComponent } from './components/features/register/register.component';
 import { ShopComponent } from './components/features/shop/shop.component';
+import { TransactionComponent } from './components/features/transaction/transaction.component';
 
 const routes: Routes = [
   {path:"home",component:HomeComponent},
@@ -23,7 +24,9 @@ const routes: Routes = [
   {path:"signup",component:RegisterComponent},
   {path:"help", component:HelpComponent},
   {path:"about", component:AboutComponent},
-  {path:"contactUs", component:ContactUsComponent}
+  {path:"contactUs", component:ContactUsComponent},
+  {path:"transaction", component:TransactionComponent}
+
 ];
 
 @NgModule({

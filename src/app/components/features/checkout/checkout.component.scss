@@ -1,0 +1,17 @@
+.buttonDel {background-color: #f44336;} /* Red */
+.buttonComplete {background-color: #008CBA;} /* Blue */
+
+.custom-button {
+  background-color: #007bff; /* Change this to your desired button color */
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+/* Style for disabled buttons */
+.custom-button:disabled {
+  background-color: #cccccc; /* Change this to the desired grey color */
+  cursor: not-allowed;
+}

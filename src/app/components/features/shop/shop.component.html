@@ -1,36 +1,38 @@
-<div *ngIf="loggedValue$ | async;else elseBlock">
-logged
-
-
+<div *ngIf="loggedValue$ | async; else elseBlock">
+  <h1>your cart</h1>
   <ng-container *ngFor="let item of cupons">
     <div class="card-group">
-        <div class="card">
-            <img class=""card-img-top src='http://127.0.0.1:8000/{{item.cuponImage}}' alt={{item.cuponImage}} style="height:5cm ;width:4cm "/>
-            <div class="card-body">
-                <h3 class="card-title">{{item.cuponPrice}} cleanearth points</h3>
-                <p class="card-text">{{item.cuponDescription}}</p>
-            </div>
-            <div class="card-footer">
-                <small class="text-muted">
-                    number:{{item.uniqueNumber}}<br/>
-                </small>
-                <div class="example-button-container">
-
-                  <button mat-mini-fab color="accent" type="submit" disableRipple="" [disabled]="item.cuponPrice > (tempBalance$ | async)!">
-                    <mat-icon ripple="">add_shopping_cart</mat-icon>
-                </button>
-
-
-
-
-                </div>
-              </div>
-</div>
-</div>
-
-
-</ng-container>
-
+      <div class="card">
+        <img
+          class=""
+          card-img-top
+          src="http://127.0.0.1:8000/{{ item.cuponImage }}"
+          alt="{{ item.cuponImage }}"
+          style="height: 5cm; width: 4cm"
+        />
+        <div class="card-body">
+          <h3 class="card-title">{{ item.cuponPrice }} cleanearth points</h3>
+          <p class="card-text">{{ item.cuponDescription }}</p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">
+            number:{{ item.uniqueNumber }}<br />
+          </small>
+          <div class="example-button-container">
+            <button
+              mat-mini-fab
+              color="accent"
+              type="button"
+              (click)="addToCart(item)"
+              [disabled]="item.cuponPrice > (tempBalance$ | async)!"
+            >
+              <mat-icon ripple="">add_shopping_cart</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>
 
 <ng-template #elseBlock>shop not loged</ng-template>

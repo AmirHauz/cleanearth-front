@@ -23,9 +23,9 @@ export class BalanceSharedService {
     this.balanceSubject.next(balance);
   }
 
-  updateTempBalance(): void {
+  updateTempBalance(itemPrice: number): void {
     const lastValue = this.balanceSubject.value
-    this.tempBalanceSubject.next(lastValue);
+    this.tempBalanceSubject.next(lastValue - itemPrice);
   }
 
 

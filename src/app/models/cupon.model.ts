@@ -1,6 +1,7 @@
 export interface Cupon
 {
-  cuponDescription:string;
+  id: number;
+  cuponDescription: string;
   cuponImage : string;
   cuponPrice: number;
   uniqueNumber: string;

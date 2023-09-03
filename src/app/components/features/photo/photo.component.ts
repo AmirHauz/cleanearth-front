@@ -7,7 +7,10 @@ import * as $ from "jquery";
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { BalanceService } from 'src/app/services/balance.service';
+import { Balance } from 'src/app/models/balance.model ';
+import { BalanceSharedService } from 'src/app/services/balance-shared.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-photo',
   templateUrl: './photo.component.html',
@@ -34,23 +37,42 @@ export class PhotoComponent implements OnInit {
   accessToken$!: Observable<string>;
   imageUploadedBefore = false;
   imageUploadedAfter = false;
+  balance$!: Observable<number>;
+  tempBalance$!: Observable<number>;
 
 
   constructor(
     private uploadService: FileUploadService,
     private authService: AuthService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private balanceService:BalanceService,
+    private balanceSharedService: BalanceSharedService,
+    private router:Router,
+    ) {
   }
   ngOnInit(): void {
     this.loggedValue$ = this.authService.logged$;
     this.userValue$ = this.authService.userName$;
     this.userId$ = this.authService.userId$
+    this.accessToken$ = this.authService.accessToken$;
 
 
     this.authService.accessToken$.subscribe((token: string) => {
       console.log("Access token value photo:", token);
     });
+  }
+
+
+  private retrieveBalance(): void {
+    this.balanceService.getBalance(this.accessToken$).subscribe(
+      (balance: Balance) => {
+        console.log("Response for balance:", balance.balance);
+      },
+      (error) => {
+        console.error("Error occurred while fetching balance:", error);
+      }
+    );
   }
 
   readURL(input: any, imageType: string) {
@@ -78,7 +100,6 @@ export class PhotoComponent implements OnInit {
         if (this.fileUploadContentBefore.nativeElement.style.display != ''){
           this.imageUploadedBefore = true;
         }
-        console.log("sanja")
         console.log(this.fileUploadContentBefore.nativeElement.style.display)
         console.log(this.fileUploadContentAfter.nativeElement.style.display)
         if (this.fileUploadContentAfter.nativeElement.style.display != ''){
@@ -96,56 +117,60 @@ export class PhotoComponent implements OnInit {
     this.imageUploadedAfter = false;
   }
 
-  upload(): void {
-    console.log("upload called");
-    if (this.selectedFilesBefore && this.selectedFilesBefore.length > 0 &&
-      this.selectedFilesAfter && this.selectedFilesAfter.length > 0) {
-      const fileBefore: File | null = this.selectedFilesBefore.item(0);
-      const fileAfter: File | null = this.selectedFilesAfter.item(0);
-      console.log("fileBefore in component:", fileBefore);
-      console.log("fileAfter in component:", fileAfter);
+    upload(): void {
+      console.log("upload called");
+      if (this.selectedFilesBefore && this.selectedFilesBefore.length > 0 &&
+        this.selectedFilesAfter && this.selectedFilesAfter.length > 0) {
+        const fileBefore: File | null = this.selectedFilesBefore.item(0);
+        const fileAfter: File | null = this.selectedFilesAfter.item(0);
+        console.log("fileBefore in component:", fileBefore);
+        console.log("fileAfter in component:", fileAfter);
 
-      this.selectedFilesBefore = undefined;
+        this.selectedFilesBefore = undefined;
 
-      if (fileBefore && fileAfter) {
-        let userId: number;
-        this.userId$.pipe(
-          take(1)
-        ).subscribe(id => {
-          userId = id;
-        });
+        if (fileBefore && fileAfter) {
+          let userId: number;
+          this.userId$.pipe(
+            take(1)
+          ).subscribe(id => {
+            userId = id;
+          });
 
-        this.authService.accessToken$.pipe(
-          take(1),
-          switchMap((token: any) => {
-            const fileUploadBefore = new FileUpload(fileBefore, userId);
-            const fileUploadAfter = new FileUpload(fileAfter, userId);
+          this.authService.accessToken$.pipe(
+            take(1),
+            switchMap((token: any) => {
+              const fileUploadBefore = new FileUpload(fileBefore, userId);
+              const fileUploadAfter = new FileUpload(fileAfter, userId);
 
-            return this.uploadService.pushFileToStorage(fileUploadBefore, fileUploadAfter, token);
-          })
-        ).subscribe(
-          (percentage: number | undefined) => {
-            if (percentage) {
-              this.percentage = Math.round(percentage);
-              if (this.percentage === 100) {
-                this.toastr.success('Upload successful', 'Success', { timeOut: 3000 });
-                // Clear the selected files and reset image previews
-                this.selectedFilesBefore = undefined;
-                this.selectedFilesAfter = undefined;
-                this.imageUploadWrapBefore.nativeElement.value = '';
-                this.imageUploadWrapAfter.nativeElement.value = '';
-                this.fileUploadContentBefore.nativeElement.style.display = 'none';
-                this.fileUploadContentAfter.nativeElement.style.display = 'none';
-              }
+              return this.uploadService.pushFileToStorage(fileUploadBefore, fileUploadAfter, token);
+            })
+          ).subscribe(
+            (percentage: number | undefined) => {
+              if (percentage) {
+                this.percentage = Math.round(percentage);
+                if (this.percentage === 100) {
+                  this.toastr.success('Upload successful', 'Success', { timeOut: 3000 });
+                  // Clear the selected files and reset image previews
+                  this.selectedFilesBefore = undefined;
+                  this.selectedFilesAfter = undefined;
+                  this.imageUploadWrapBefore.nativeElement.value = '';
+                  this.imageUploadWrapAfter.nativeElement.value = '';
+                  this.fileUploadContentBefore.nativeElement.style.display = 'none';
+                  this.fileUploadContentAfter.nativeElement.style.display = 'none';
+                  // Wait for 2 seconds before navigating to "myHistory"
+              setTimeout(() => {
+                this.router.navigate(["myHistory"]);
+              }, 1000);
             }
-          },
-          (error: any) => {
-            console.log(error);
           }
-        );
-      }
+        },
+        (error: any) => {
+          console.log(error);
+        }
+      );
     }
   }
+}
 
 
 
