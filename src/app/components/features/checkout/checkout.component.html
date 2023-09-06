@@ -15,9 +15,9 @@
             <p class="card-text">price for 1:{{cartItem.reward.cuponPrice}}</p>
           </div>
           <div class="card-footer">
-            <p><button (click)="decreaseCartItemAmount(cartItem)" [disabled]="cartItem.amount < 2" class="custom-button"> take one down</button> currently you have{{ cartItem.amount }}  <button (click)="increaseCartItemAmount(cartItem)" [disabled]="cartItem.reward.cuponPrice > (tempBalance$ | async)!" class="custom-button">add one more</button></p>
+            <p><button (click)="decreaseCartItemAmount(cartItem)" [disabled]="cartItem.amount < 2" class="custom-button"> take one down</button> currently you have{{ cartItem.amount }}  <button (click)="increaseCartItemAmount(cartItem)" [disabled]="cartItem.reward.cuponPrice > (tempBalance$ | async)!" class="custom-button">add one more</button>(notice to change amount only if you want to have ploral of the same product at once! <b>if you don't add  item from shop</b>)</p>
             <p>total: {{ cartItem.total }}</p>
-           <button type="button" class="buttonDel" (click)="deleteCartItem(cartItem.id)">delete</button><button type="button" class="buttonComplete" >complete transaction</button>
+           <button type="button" class="buttonDel" (click)="deleteCartItem(cartItem.id)">delete</button><button type="button" class="buttonComplete" (click)="takeCupon(cartItem)">complete transaction</button>
           </div>
             <!-- Add more properties as needed -->
 

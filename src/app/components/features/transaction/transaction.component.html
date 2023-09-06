@@ -1,1 +1,37 @@
-<p>transaction works!</p>
+<div *ngIf="loggedValue$ | async as loggedIn; else elseBlock">
+  <ng-container *ngIf="loggedIn; else loadingBlock">
+    <div *ngIf="cupon$ | async as cuponItems; else emptyCartBlock">
+      <ng-container *ngFor="let cuponItem of cuponItems">
+        <div class="card">
+          <img
+            class=""
+            card-img-top
+            src="http://127.0.0.1:8000/{{ cuponItem.reward.cuponImage }}"
+            alt="{{ cuponItem.reward.cuponImage }}"
+            style="height: 5cm; width: 4cm"
+          />
+          <div class="card-body">
+            <h3 class="card-title">{{ cuponItem.reward.cuponDescription }}</h3>
+            <p class="card-text">price for 1:{{cuponItem.reward.cuponPrice}}</p>
+          </div>
+          <div class="card-footer">
+            bla
+          </div>
+            <!-- Add more properties as needed -->
+
+        </div>
+      </ng-container>
+    </div>
+    <ng-template #emptyCartBlock>
+      <p>Your cart is empty.</p>
+    </ng-template>
+  </ng-container>
+</div>
+
+<ng-template #loadingBlock>
+  <p>Loading...</p>
+</ng-template>
+
+<ng-template #elseBlock>
+  <p>transection not logged</p>
+</ng-template>
