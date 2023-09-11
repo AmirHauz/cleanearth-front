@@ -12,6 +12,7 @@ import { ProfileComponent } from './components/features/profile/profile.componen
 import { RegisterComponent } from './components/features/register/register.component';
 import { ShopComponent } from './components/features/shop/shop.component';
 import { TransactionComponent } from './components/features/transaction/transaction.component';
+import { UpdateScoresComponent } from './components/features/update-scores/update-scores.component';
 
 const routes: Routes = [
   {path:"home",component:HomeComponent},
@@ -25,7 +26,8 @@ const routes: Routes = [
   {path:"help", component:HelpComponent},
   {path:"about", component:AboutComponent},
   {path:"contactUs", component:ContactUsComponent},
-  {path:"transaction", component:TransactionComponent}
+  {path:"transaction", component:TransactionComponent},
+  {path:"updateScore",component:UpdateScoresComponent},
 
 ];
 

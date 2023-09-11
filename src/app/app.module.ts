@@ -44,6 +44,9 @@ import {MatSelectModule} from'@angular/material/select';
 import { BalanceService } from './services/balance.service';
 import { BalanceSharedService } from './services/balance-shared.service';
 import { TransactionComponent } from './components/features/transaction/transaction.component';
+import { UpdateScoresComponent } from './components/features/update-scores/update-scores.component';
+import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import { TransactionDialogComponent } from './components/features/transaction/transaction-dialog';
 
 @NgModule({
   declarations: [
@@ -65,7 +68,9 @@ import { TransactionComponent } from './components/features/transaction/transact
     MyFooterComponent,
     MyNavBarComponent,
     BalanceComponent,
+    UpdateScoresComponent,
     TransactionComponent,
+    TransactionDialogComponent,
 
 
 
@@ -94,6 +99,10 @@ import { TransactionComponent } from './components/features/transaction/transact
     MatSortModule,
     MatPaginatorModule,
     MatSelectModule,
+    MatButtonModule,
+    MatDialogModule,
+    CommonModule,
+
   ],
   providers: [HttpClient,BalanceService,BalanceSharedService],
   bootstrap: [AppComponent,MyCategoriesComponent]

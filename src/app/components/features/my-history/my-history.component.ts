@@ -6,6 +6,8 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import { FileUploadService } from 'src/app/services/file-upload.service';
+import { TakenCupon } from 'src/app/models/taken-cupon';
+import { CuponService } from 'src/app/services/cupon.service';
 
 
 @Component({
@@ -18,10 +20,13 @@ export class MyHistoryComponent implements AfterViewInit{
   userId$!: Observable<number>;
   accessToken$!: Observable<string>;
   cleaningHistory$!: Observable<HistoryCleaningAction[]>;
+  purchaseHistory$!: Observable<TakenCupon[]>;
 
 
-  displayedColumns: string[] = ['beforePicture', 'afterPicture', 'score', 'date'];
-  dataSource = new MatTableDataSource<HistoryCleaningAction>([]);
+  displayedColumnsCleaningHistory: string[] = ['beforePicture', 'afterPicture', 'score', 'date'];
+  displayedColumnsPurchase: string[] = ['cuponImage', 'description', 'amount', 'status'];
+  dataSourceCleaningHistory = new MatTableDataSource<HistoryCleaningAction>([]);
+  dataSourcePurchase = new MatTableDataSource<TakenCupon>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -29,11 +34,14 @@ export class MyHistoryComponent implements AfterViewInit{
   constructor(
 
     private authService : AuthService,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+    private cuponService: CuponService,
     ) {}
     ngAfterViewInit() {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.dataSourceCleaningHistory.paginator = this.paginator;
+      this.dataSourceCleaningHistory.sort = this.sort;
+      this.dataSourcePurchase.paginator = this.paginator;
+      this.dataSourcePurchase.sort = this.sort;
     }
     ngOnInit(): void {
       this.loggedValue$= this.authService.logged$;
@@ -60,20 +68,51 @@ export class MyHistoryComponent implements AfterViewInit{
         this.cleaningHistory$.subscribe(
           (cleaningActions: HistoryCleaningAction[]) => {
             console.log('Cleaning Actions:', cleaningActions); // Check if data is coming from the server
-            this.dataSource.data = cleaningActions; // Assign the data to the dataSource directly
+            this.dataSourceCleaningHistory.data = cleaningActions; // Assign the data to the dataSource directly
           },
           (error) => {
             console.log('Error fetching cleaning history:', error);
           }
         );
       });
-    }
-    applyFilter(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value;
-      this.dataSource.filter = filterValue.trim().toLowerCase();
 
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
+      this.loggedValue$.subscribe(loggedIn => {
+        if (loggedIn) {
+          this.authService.accessToken$.subscribe(accessToken => {
+            this.authService.userId$.subscribe(userId => {
+              if (accessToken && userId) {
+                this.purchaseHistory$ = this.cuponService.getCupons(userId, accessToken);
+                this.purchaseHistory$.subscribe(
+                  (purchase: TakenCupon[]) => {
+                    console.log('purchase:', purchase); // Check if data is coming from the server
+                    this.dataSourcePurchase.data = purchase; // Assign the data to the dataSource directly
+                  },
+                  (error) => {
+                    console.log('Error fetching cleaning history:', error);
+                  }
+                );
+              }
+            });
+          });
+        }
+      });
+
+    }
+    applyFilterCleaningAction(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSourceCleaningHistory.filter = filterValue.trim().toLowerCase();
+
+      if (this.dataSourceCleaningHistory.paginator) {
+        this.dataSourceCleaningHistory.paginator.firstPage();
+      }
+    }
+
+    applyFilterpurchase(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSourcePurchase.filter = filterValue.trim().toLowerCase();
+
+      if (this.dataSourcePurchase.paginator) {
+        this.dataSourcePurchase.paginator.firstPage();
       }
     }
 

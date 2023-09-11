@@ -8,6 +8,7 @@ import { CartItem, CartItemDisplay } from '../models/cart.model';
 export class CartService {
   private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
   cartItems$: Observable<CartItem[]> = this.cartItemsSubject.asObservable();
+  private cartCountSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
   private readonly MYSERVER = 'http://127.0.0.1:8000/item/';
   constructor(private http: HttpClient) { }
@@ -60,4 +61,13 @@ export class CartService {
     });
     return this.http.put(`${this.MYSERVER}`, item, { headers: headers });
   }
+
+  get CartCount$(): Observable<number> {
+    return this.cartCountSubject.asObservable();
+  }
+
+  setCartCount(count: number) {
+    this.cartCountSubject.next(count);
+  }
+
 }

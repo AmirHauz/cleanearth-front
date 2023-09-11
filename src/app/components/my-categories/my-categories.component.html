@@ -1,12 +1,26 @@
-<div>
-  <div class="sideBar open">
-    <ul>
-      <li><a routerLink="/photo">I Cleaned<br> (Upload Photos)</a></li>
-      <li><a routerLink="/myHistory">My History</a></li>
-      <li><a routerLink="/transaction">My Unused Gifts</a></li>
-    </ul>
+<ng-container *ngIf="isAdmin$ |async  ; else userCategories">
+  <div>
+    <div class="sideBar open">
+      <ul>
+        <li><a routerLink="/updateScore">unscored cleaning actions</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <router-outlet class="mainDisplay"></router-outlet>
+    </div>
   </div>
-  <div class="main">
-    <router-outlet class="mainDisplay"></router-outlet>
+</ng-container>
+<ng-template #userCategories>
+  <div>
+    <div class="sideBar open">
+      <ul>
+        <li><a routerLink="/photo">I Cleaned<br> (Upload Photos)</a></li>
+        <li><a routerLink="/myHistory">My History</a></li>
+        <li><a routerLink="/transaction">My Unused Gifts</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <router-outlet class="mainDisplay"></router-outlet>
+    </div>
   </div>
-</div>
+</ng-template>

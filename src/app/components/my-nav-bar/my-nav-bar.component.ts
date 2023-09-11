@@ -1,36 +1,39 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { BalanceService } from 'src/app/services/balance.service';
 import { AsyncPipe } from '@angular/common';
 import { Balance } from 'src/app/models/balance.model ';
 import { BalanceSharedService } from 'src/app/services/balance-shared.service';
+import { CartService } from 'src/app/services/cart.service';
 @Component({
   selector: 'app-my-nav-bar',
   templateUrl: './my-nav-bar.component.html',
   styleUrls: ['./my-nav-bar.component.scss']
 })
 export class MyNavBarComponent implements OnInit, OnDestroy {
-  counter = 0;
+  counter: number = 0;
   tempBalance = 0;
   loggedValue$!: Observable<boolean>;
   userValue$!: Observable<string>;
   balance$!: Observable<number>;
   tempBalance$!: Observable<number>;
   accessToken$!: Observable<string>;
-
+  isAdmin$!:Observable<boolean>;
   balanceSubscription?: Subscription;
+  counter$!:Observable<number>;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private balanceService: BalanceService,
     private balanceSharedService: BalanceSharedService,
+    private cartService: CartService
   ) { }
 
   ngOnInit(): void {
-
+    this.isAdmin$=this.authService.userIsAdminl$
     this.loggedValue$ = this.authService.logged$;
     console.log(this.loggedValue$);
     this.accessToken$ = this.authService.accessToken$;
@@ -46,6 +49,7 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
     }
     this.balance$ = this.balanceSharedService.balance$;
     this.tempBalance$ = this.balanceSharedService.tempBalance$;
+    this.counter$ = this.cartService.CartCount$;
 
     // Subscribe to balance$ and update tempBalance when it emits a new value
     if (storedUsername) {
@@ -57,6 +61,9 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
       );
 
     }
+    this.cartService.CartCount$.subscribe((count) => {
+      this.counter = count;
+    });
   }
 
   ngOnDestroy(): void {

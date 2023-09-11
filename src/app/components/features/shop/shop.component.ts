@@ -83,9 +83,18 @@ export class ShopComponent {
         // Update the temporary balance with the calculated value
         this.balanceSharedService.updateTempBalance(itemPrice);
 
+        // Now, update the cart count
+    this.cartService.cartItems$.pipe(take(1)).subscribe((cartItems) => {
+      const updatedCartCount = this.calculateCartCount(cartItems);
+      this.cartService.setCartCount(updatedCartCount);
+    });
+
         console.log('Item added to cart:', cartItem);
     //   } else {
     //     console.log('Insufficient balance to add item to cart.');
     // });
+  }
+  private calculateCartCount(cartItems: CartItem[]): number {
+    return cartItems.reduce((count, item) => count + item.amount, 0);
   }
 }

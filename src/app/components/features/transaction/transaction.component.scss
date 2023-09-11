@@ -1,0 +1,16 @@
+.card-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* This centers the button vertically within the footer */
+  min-height: 40px;
+}
+
+button {
+  right: 0;
+  position: absolute;
+
+}
+.custom-dialog {
+  // Set your custom width here, e.g., 500px
+  width: 500px;
+}

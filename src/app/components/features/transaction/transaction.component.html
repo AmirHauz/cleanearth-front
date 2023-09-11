@@ -12,10 +12,10 @@
           />
           <div class="card-body">
             <h3 class="card-title">{{ cuponItem.reward.cuponDescription }}</h3>
-            <p class="card-text">price for 1:{{cuponItem.reward.cuponPrice}}</p>
+            <p class="card-text">amount:{{cuponItem.amount}}</p>
           </div>
           <div class="card-footer">
-            bla
+            <button mat-raised-button (click)="openDialog('3000ms', '1500ms', cuponItem.uniqueId, cuponItem.id)" >use gift</button>
           </div>
             <!-- Add more properties as needed -->
 

@@ -21,7 +21,7 @@ export class FileUploadService {
     fileSource: new FormControl('', [Validators.required])
   });
   private basePath = '/uploads';
-  private readonly MYSERVER = 'http://127.0.0.1:8000/cleaningAction/';
+  private readonly MYSERVER = 'http://127.0.0.1:8000/';
   constructor(
     private storage: AngularFireStorage,
     private http: HttpClient
@@ -71,7 +71,7 @@ export class FileUploadService {
 
   private saveFileData(fileUploadBefore: FileUpload, fileUploadAfter: FileUpload, token: string): Observable<any> {
     console.log("the token in the service is: ", token);
-    const url = `${this.MYSERVER}`;
+    const url = this.MYSERVER + "cleaningAction/";
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
@@ -84,9 +84,8 @@ export class FileUploadService {
       afterPicture: fileUploadAfter.url,
     }
     return this.http.post(url, body, { headers: headers });
-    
-  }
 
+  }
 
   getFilesByUserId(userId: number, token: string): any {
     // return this.db.list(this.basePath, ref =>
@@ -95,9 +94,35 @@ export class FileUploadService {
       'Authorization': 'Bearer ' + token
     });
 
-    return this.http.get(`${this.MYSERVER}`, { headers: headers }).pipe(
+    return this.http.get(this.MYSERVER + "cleaningAction/", { headers: headers }).pipe(
       catchError(error => throwError(error))
     );
+  }
+
+  getFilesAdmin(token: string): any {
+    // return this.db.list(this.basePath, ref =>
+    //   ref.orderByChild('userID').equalTo(userId).limitToLast(numberItems));
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    return this.http.get(this.MYSERVER + "adminCleaningAction/", { headers: headers }).pipe(
+      catchError(error => throwError(error))
+    );
+  }
+
+  updateScore(data:FileUpload,token: string) {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+    return this.http.put(this.MYSERVER +"adminCleaningAction/", data, { headers: headers });
+  }
+
+  deleteCleaningAction(id: number,token: string) {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+    return this.http.delete(`${this.MYSERVER}cleaningAction/${id}`,  { headers: headers } );
   }
 
   deleteFile(fileUpload: FileUpload): void {
