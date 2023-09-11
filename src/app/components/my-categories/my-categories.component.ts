@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -12,9 +12,10 @@ export class MyCategoriesComponent {
 
   constructor(
     private authService: AuthService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.isAdmin$=this.authService.userIsAdminl$
+
   }
 }

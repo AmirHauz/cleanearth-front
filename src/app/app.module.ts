@@ -47,11 +47,11 @@ import { TransactionComponent } from './components/features/transaction/transact
 import { UpdateScoresComponent } from './components/features/update-scores/update-scores.component';
 import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import { TransactionDialogComponent } from './components/features/transaction/transaction-dialog';
+import { FilterByStatusPipe } from './shared/filter-by-status.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-
     AboutComponent,
     CheckoutComponent,
     ContactUsComponent,
@@ -71,6 +71,7 @@ import { TransactionDialogComponent } from './components/features/transaction/tr
     UpdateScoresComponent,
     TransactionComponent,
     TransactionDialogComponent,
+    FilterByStatusPipe,
 
 
 
