@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartItem, CartItemDisplay } from '../models/cart.model';
 @Injectable({
@@ -10,7 +10,7 @@ export class CartService {
   cartItems$: Observable<CartItem[]> = this.cartItemsSubject.asObservable();
   private cartCountSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-  private readonly MYSERVER = 'http://127.0.0.1:8000/item/';
+  private readonly MYSERVER = 'http://127.0.0.1:8000/';
   constructor(private http: HttpClient) { }
 
   // addToCart(item: CartItem, token: string ): Observable<string | undefined> {
@@ -29,12 +29,12 @@ export class CartService {
   //     }
   //   );
   // }
-
+  // return this.http.get<Balance>(this.MYSERVER + "balance/", { headers }).pipe(
   updateCartOnServer(cartItems: CartItem[], token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
-    return this.http.post(`${this.MYSERVER}`, { cartItems },{headers:headers});
+    return this.http.post(this.MYSERVER + "item/", { cartItems },{headers:headers});
   }
 
   public getItems(userId: number,token: string): Observable<CartItemDisplay[]> {
@@ -42,7 +42,7 @@ export class CartService {
       'Authorization': 'Bearer ' + token
     });
 
-    return this.http.get<CartItemDisplay[]>(`${this.MYSERVER}`, { headers: headers }).pipe(
+    return this.http.get<CartItemDisplay[]>(this.MYSERVER + "item/", { headers: headers }).pipe(
       catchError(error => throwError(error))
     );
   }
@@ -52,14 +52,14 @@ export class CartService {
       'Authorization': 'Bearer ' + token
     });
 
-    return this.http.delete(`${this.MYSERVER}${itemId}`, { headers: headers });
+    return this.http.delete(this.MYSERVER + "item/", { headers: headers });
   }
 
   updateCartItemAmount(item: CartItem, token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
-    return this.http.put(`${this.MYSERVER}`, item, { headers: headers });
+    return this.http.put(this.MYSERVER + "item/", item, { headers: headers });
   }
 
   get CartCount$(): Observable<number> {
@@ -69,5 +69,7 @@ export class CartService {
   setCartCount(count: number) {
     this.cartCountSubject.next(count);
   }
+
+ 
 
 }

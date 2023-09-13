@@ -2,14 +2,15 @@
   <mat-tab-group animationDuration="0ms">
     <mat-tab label="cleaning history">
       <div>
+        <!--start of cleaning history table-->
         <mat-form-field>
           <mat-label>Filter</mat-label>
           <input
             matInput
             (keyup)="applyFilterCleaningAction($event)"
             placeholder="Ex. Mia"
-            #input
-          /> </mat-form-field
+            #input/>
+        </mat-form-field
         ><!-- filtering cleaning actions working properly -->
 
         <div class="mat-elevation-z8">
@@ -58,12 +59,12 @@
             </tr>
           </table>
 
-          <mat-paginator
+          <mat-paginator #paginatorCleaningHistory="matPaginator"
             [pageSizeOptions]="[5, 10, 25, 100]"
-            aria-label="Select page of users"
-          ></mat-paginator>
+            aria-label="Select page of users">
+          </mat-paginator>
         </div>
-      </div>
+       </div>
     </mat-tab>
       <!-- showing the history of cleaning actions-->
     <mat-tab label="shopping history">
@@ -74,8 +75,8 @@
             matInput
             (keyup)="applyFilterpurchase($event)"
             placeholder="Ex. Mia"
-            #input
-          /> </mat-form-field
+            #input/>
+        </mat-form-field
         ><!-- filtering purchase actions working properly -->
 
         <div class="mat-elevation-z8">
@@ -118,14 +119,14 @@
             </tr>
           </table>
 
-          <mat-paginator
+          <mat-paginator #paginatorPurchase="matPaginator"
+
             [pageSizeOptions]="[5, 10, 25, 100]"
             aria-label="Select page of users"
           ></mat-paginator>
         </div>
-      </div>
-      </mat-tab
-    ><!-- showing the history of purchases-->
+       </div>
+    </mat-tab>
   </mat-tab-group>
 </div>
 <!-- end of logged component -->

@@ -28,7 +28,9 @@ export class MyHistoryComponent implements AfterViewInit{
   dataSourceCleaningHistory = new MatTableDataSource<HistoryCleaningAction>([]);
   dataSourcePurchase = new MatTableDataSource<TakenCupon>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  @ViewChild('paginatorCleaningHistory') paginatorCleaningHistory!: MatPaginator;
+  @ViewChild('paginatorPurchase') paginatorPurchase!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
@@ -38,9 +40,9 @@ export class MyHistoryComponent implements AfterViewInit{
     private cuponService: CuponService,
     ) {}
     ngAfterViewInit() {
-      this.dataSourceCleaningHistory.paginator = this.paginator;
+      this.dataSourceCleaningHistory.paginator = this.paginatorCleaningHistory;
       this.dataSourceCleaningHistory.sort = this.sort;
-      this.dataSourcePurchase.paginator = this.paginator;
+      this.dataSourcePurchase.paginator = this.paginatorPurchase;
       this.dataSourcePurchase.sort = this.sort;
     }
     ngOnInit(): void {

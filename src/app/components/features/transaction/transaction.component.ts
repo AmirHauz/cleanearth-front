@@ -73,4 +73,8 @@ export class TransactionComponent {
         }
       });
     }
+
+    removeItem(itemId: number) {
+      this.cuponService.removeItemFromCart(itemId);
+    }
   }

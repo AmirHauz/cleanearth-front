@@ -106,6 +106,7 @@ export class CheckoutComponent {
         () => {
           console.log('Item amount decreased successfully on the server.');
           this.authService.getAllDetails();
+          this
         },
         error => {
           console.error('Error increasing item amount on the server:', error);

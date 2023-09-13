@@ -22,6 +22,7 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
   accessToken$!: Observable<string>;
   isAdmin$!:Observable<boolean>;
   balanceSubscription?: Subscription;
+  cartCountSubscription?:Subscription;
   counter$!:Observable<number>;
 
   constructor(
@@ -61,14 +62,21 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
       );
 
     }
-    this.cartService.CartCount$.subscribe((count) => {
-      this.counter = count;
-    });
+    if (storedUsername) {
+      // Subscribe to this.cartService.CartCount$ and update this.counter when it emits a new value
+      this.cartCountSubscription = this.cartService.CartCount$.subscribe((count) => {
+        this.counter = count;
+        console.log("the counter in navbar is::::::::::", count);
+      });
+    }
   }
 
   ngOnDestroy(): void {
     if (this.balanceSubscription) {
       this.balanceSubscription.unsubscribe();
+    }
+    if (this.cartCountSubscription) {
+      this.cartCountSubscription.unsubscribe();
     }
   }
 

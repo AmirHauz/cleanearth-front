@@ -11,6 +11,7 @@ export class CuponService {
   private readonly MYSERVER = 'http://127.0.0.1:8000/cupon/';
   constructor(private http: HttpClient) { }
 
+  private cartItems: TakenCupon[] = [];
   takeCupon(item: CartItemDisplay, token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + token
@@ -26,5 +27,9 @@ export class CuponService {
     return this.http.get<TakenCupon[]>(`${this.MYSERVER}`, { headers: headers }).pipe(
       catchError(error => throwError(error))
     );
+  }
+
+  removeItemFromCart(itemId: number) {
+    this.cartItems = this.cartItems.filter(item => item.id !== itemId);
   }
 }

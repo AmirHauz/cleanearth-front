@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CuponService } from 'src/app/services/cupon.service';
 import { GiftService } from 'src/app/services/gift.service';
 import { ToastrService } from 'ngx-toastr';
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -20,14 +21,16 @@ export class TransactionDialogComponent {
   loggedValue$!: Observable<boolean>;
 
   formData: any = {};
-
+  cartItems: TakenCupon[] = [];
   constructor(
     private authService : AuthService,
     private cuponService: CuponService,
     private giftService: GiftService,
     public dialogRef: MatDialogRef<TransactionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { uniqueId: string, id: string },
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef
+
   ) {}
 
 
@@ -54,9 +57,11 @@ export class TransactionDialogComponent {
         // Close the dialog
         this.dialogRef.close();
         this.toastr.success('Gift was used successfully', 'Success');
+        // Convert this.data.id to a number and then remove the item from cartItems
+        // Remove the item from the cart using the shared service
+        this.cuponService.removeItemFromCart(Number(this.data.id));
       },
       (error) => {
-        this.dialogRef.close();
         this.toastr.error('Error while using the gift', 'Error');
         // Handle error, e.g., show an error message
         console.error('Error using gift:', error);
