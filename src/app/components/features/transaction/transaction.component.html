@@ -1,7 +1,7 @@
 <div *ngIf="loggedValue$ | async as loggedIn; else elseBlock">
   <ng-container *ngIf="loggedIn; else loadingBlock">
     <div *ngIf="(cupon$ | async) as cuponItems; else emptyCartBlock">
-      <ng-container *ngFor="let cuponItem of cuponItems | filterByStatus:'CREATED'">
+      <ng-container *ngFor="let cuponItem of filteredCupons | filterByStatus:'CREATED'; trackBy: trackByUniqueId">
         <div class="card">
           <img
             class=""

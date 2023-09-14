@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TakenCupon } from '../models/taken-cupon';
+import { TakenCupon } from '../models/taken-cupon.model';
 
 @Pipe({
   name: 'filterByStatus'

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TakenCupon } from 'src/app/models/taken-cupon';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { TakenCupon } from 'src/app/models/taken-cupon.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { CuponService } from 'src/app/services/cupon.service';
 import { Router } from '@angular/router';
@@ -19,6 +19,10 @@ export class TransactionComponent {
   loggedValue$!: Observable<boolean>;
   cupon$!: Observable<TakenCupon[]>;
   filteredCupons: TakenCupon[] = [];
+
+  private filteredCuponsSubject = new BehaviorSubject<TakenCupon[]>([]);
+filteredCupons$: Observable<TakenCupon[]> = this.filteredCuponsSubject.asObservable();
+
 
   constructor(
     public dialog: MatDialog,
@@ -39,12 +43,17 @@ export class TransactionComponent {
                 this.cupon$ = this.cuponService.getCupons(userId, accessToken);
                 this.cupon$.subscribe((cuponItems) => {
                   this.filteredCupons = cuponItems.filter((item) => item.status === 'CREATED');
+                  this.filteredCuponsSubject.next(this.filteredCupons);
                 });
               }
             });
           });
         }
       });
+    }
+
+    getTheCupon(){
+
     }
 
     openDialog(
@@ -61,20 +70,30 @@ export class TransactionComponent {
       });
 
       dialogRef.afterClosed().subscribe((result) => {
+        console.log('Dialog closed with result:', result); // Add this log statement
+
         if (result === 'success') {
-          const indexToRemove = this.filteredCupons.findIndex((coupon) => coupon.uniqueId === uniqueId);
+          // Perform the removal logic here, as the dialog has been closed successfully.
+          const indexToRemove = this.filteredCupons.findIndex((coupon) => coupon.id === id);
           if (indexToRemove !== -1) {
             this.filteredCupons.splice(indexToRemove, 1);
+            this.cupon$ = this.cupon$.pipe(
+              map(items => items.filter(item => item.id !== id))
+            );
+
           }
-          this.toastr.success('Gift was used successfully', 'Success');
-          this.cdr.detectChanges();
         } else if (result === 'error') {
           this.toastr.error('Error while using the gift', 'Error');
         }
       });
     }
 
+
     removeItem(itemId: number) {
       this.cuponService.removeItemFromCart(itemId);
+    }
+
+    trackByUniqueId(index: number, item: TakenCupon): string {
+      return item.uniqueId;
     }
   }

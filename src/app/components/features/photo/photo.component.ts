@@ -149,7 +149,7 @@ export class PhotoComponent implements OnInit {
               if (percentage) {
                 this.percentage = Math.round(percentage);
                 if (this.percentage === 100) {
-                  this.toastr.success('Upload successful', 'Success', { timeOut: 3000 });
+                  this.toastr.success('your cleaning action is sent for evaluation the score will be updated withing one work day', 'Success', { timeOut: 10000 });
                   // Clear the selected files and reset image previews
                   this.selectedFilesBefore = undefined;
                   this.selectedFilesAfter = undefined;

@@ -100,6 +100,7 @@ export class AuthService {
 
   private setUserIsAdmin(is_superuser: boolean): void {
     localStorage.setItem('isAdmin', is_superuser ? 'true' : 'false');
+    console.log("is superuser??????????????", is_superuser)
     this.userIsAdminSubject.next(is_superuser);
 }
 
@@ -197,8 +198,63 @@ public logout(): void {
   this.clearTokens();
   this.userNameSubject.next("");
   this.userEmailSubject.next("");
-  this.loggedSubject.next(false)
+  this.loggedSubject.next(false);
+   this.balanceSharedService.clearBalanceData();
 }
+
+public loadUserDataOnRefresh() {
+  if (this.getAccessToken()) {
+    // Fetch user data and set observables
+    // You can call the necessary methods here to load user data and admin status
+
+    // Subscribe to userIsAdmin$ and log its value
+    this.userIsAdminl$.subscribe(isAdmin => {
+      console.log("userIsAdmin$ value:", isAdmin);
+    });
+
+    // Call your methods here to load user data and admin status
+    this.getAllDetails();
+  }
+}
+
+public refreshAccessToken(): Observable<AuthResponse> {
+  const url = `${this.MYSERVER}/token/refresh/`;
+  const refreshToken = this.getRefreshToken();
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${refreshToken}`
+  });
+
+  return this.http.post<AuthResponse>(url, null, { headers }).pipe(
+    tap(response => {
+      this.setAccessToken(response.access);
+    }),
+    catchError(error => {
+      this.clearTokens(); // Clear tokens on refresh failure
+      return throwError(error);
+    })
+  );
+}
+
+// public refreshAccessToken(): Observable<string> {
+//   const url = `${this.MYSERVER}/token/refresh/`;
+//   const refreshToken = this.getRefreshToken();
+//   const headers = new HttpHeaders({
+//     'Content-Type': 'application/json',
+//     'Authorization': `Bearer ${refreshToken}`
+//   });
+//   return this.http.post<AuthResponse>(url, null, { headers }).pipe(
+//     switchMap(response => {
+//       this.setAccessToken(response.accessToken);
+//       return this.accessTokenSubject;
+//     }),
+//     catchError(error => {
+//       this.clearTokens();
+//       return throwError(error);
+//     })
+//   );
+// }
+
 
   // public isLoggedIn(): boolean {
   //   const token = this.getAccessToken();
@@ -212,23 +268,6 @@ public logout(): void {
     // return expirationDate < new Date();
   // }
 
-  // public refreshAccessToken(): Observable<string> {
-  //   const url = `${this.MYSERVER}/token/refresh/`;
-  //   const refreshToken = this.getRefreshToken();
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Authorization': `Bearer ${refreshToken}`
-  //   });
-  //   return this.http.post<AuthResponse>(url, null, { headers }).pipe(
-  //     switchMap(response => {
-  //       this.setAccessToken(response.accessToken);
-  //       return this.accessTokenSubject;
-  //     }),
-  //     catchError(error => {
-  //       this.clearTokens();
-  //       return throwError(error);
-  //     })
-  //   );
-  // }
+
 
 }

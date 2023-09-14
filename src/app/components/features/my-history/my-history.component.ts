@@ -6,7 +6,7 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import { FileUploadService } from 'src/app/services/file-upload.service';
-import { TakenCupon } from 'src/app/models/taken-cupon';
+import { TakenCupon } from 'src/app/models/taken-cupon.model';
 import { CuponService } from 'src/app/services/cupon.service';
 
 

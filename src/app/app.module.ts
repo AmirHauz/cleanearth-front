@@ -1,4 +1,4 @@
-import { NgModule} from '@angular/core';
+import { APP_INITIALIZER, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import{MatToolbarModule} from '@angular/material/toolbar'
 import { AppRoutingModule } from './app-routing.module';
@@ -22,7 +22,7 @@ import { MyNavBarComponent } from './components/my-nav-bar/my-nav-bar.component'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
-import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHandler, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
@@ -48,6 +48,7 @@ import { UpdateScoresComponent } from './components/features/update-scores/updat
 import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import { TransactionDialogComponent } from './components/features/transaction/transaction-dialog';
 import { FilterByStatusPipe } from './shared/filter-by-status.pipe';
+import { TokenInterceptor } from './token-interceptor';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,17 @@ import { FilterByStatusPipe } from './shared/filter-by-status.pipe';
     CommonModule,
 
   ],
-  providers: [HttpClient,BalanceService,BalanceSharedService],
+  providers: [ {
+    provide: APP_INITIALIZER,
+    useFactory: (authService: AuthService) => () => authService.loadUserDataOnRefresh(),
+    deps: [AuthService],
+    multi: true,
+  },{
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  },
+  HttpClient,BalanceService,BalanceSharedService],
   bootstrap: [AppComponent,MyCategoriesComponent]
 })
 export class AppModule { }

@@ -40,4 +40,5 @@ export class BalanceService {
     this.balanceSharedService.updateTempBalance(cartTotal);
 
   }
+
 }

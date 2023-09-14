@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartItem, CartItemDisplay } from '../models/cart.model';
 import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
-import { TakenCupon } from '../models/taken-cupon';
+import { TakenCupon } from '../models/taken-cupon.model';
 
 @Injectable({
   providedIn: 'root'

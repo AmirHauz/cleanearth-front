@@ -28,5 +28,8 @@ export class BalanceSharedService {
     this.tempBalanceSubject.next(lastValue - itemPrice);
   }
 
-
+  clearBalanceData() {
+    this.updateBalance(0);
+    this.updateTempBalance(0);
+  }
 }
