@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit,ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
@@ -7,6 +7,7 @@ import { AsyncPipe } from '@angular/common';
 import { Balance } from 'src/app/models/balance.model ';
 import { BalanceSharedService } from 'src/app/services/balance-shared.service';
 import { CartService } from 'src/app/services/cart.service';
+
 @Component({
   selector: 'app-my-nav-bar',
   templateUrl: './my-nav-bar.component.html',
@@ -26,28 +27,37 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
   counter$!:Observable<number>;
 
   constructor(
-    private router: Router,
     private authService: AuthService,
     private balanceService: BalanceService,
     private balanceSharedService: BalanceSharedService,
-    private cartService: CartService
+    private cartService: CartService,
+    private cdr:ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
-    this.isAdmin$=this.authService.userIsAdminl$
     this.loggedValue$ = this.authService.logged$;
-    console.log(this.loggedValue$);
     this.accessToken$ = this.authService.accessToken$;
+    
 
     // Retrieve the user's name from local storage
     const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
+    if (storedUsername ) {
       this.userValue$ = new Observable<string>((observer) => {
         observer.next(storedUsername);
       });
     } else {
       this.userValue$ = this.authService.userName$;
     }
+
+    const isAdmin: boolean = localStorage.getItem('isAdmin') == 'true' ? true : false;
+    if (storedUsername ) {
+      this.isAdmin$ = new Observable<boolean>((observer) => {
+        observer.next(isAdmin);
+      });
+    } else {
+      this.isAdmin$=this.authService.userIsAdmin$
+    }
+
     this.balance$ = this.balanceSharedService.balance$;
     this.tempBalance$ = this.balanceSharedService.tempBalance$;
     this.counter$ = this.cartService.CartCount$;

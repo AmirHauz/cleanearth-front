@@ -19,6 +19,13 @@ export class HomeComponent {
 
     ngOnInit(): void {
       this.loggedValue$ = this.authService.logged$;
-      this.userValue$ = this.authService.userName$
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername ) {
+        this.userValue$ = new Observable<string>((observer) => {
+          observer.next(storedUsername);
+        });
+      } else {
+        this.userValue$ = this.authService.userName$;
+      }
     }
 }

@@ -52,7 +52,7 @@ export class CartService {
       'Authorization': 'Bearer ' + token
     });
 
-    return this.http.delete(this.MYSERVER + "item/", { headers: headers });
+    return this.http.delete(`${this.MYSERVER}item/${itemId}`, { headers: headers });
   }
 
   updateCartItemAmount(item: CartItem, token: string): Observable<any> {
@@ -70,6 +70,6 @@ export class CartService {
     this.cartCountSubject.next(count);
   }
 
- 
+
 
 }

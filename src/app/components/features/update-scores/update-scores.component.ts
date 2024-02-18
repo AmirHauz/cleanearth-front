@@ -1,8 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ɵɵqueryRefresh } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { combineLatest, Observable } from 'rxjs';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { combineLatest, map, Observable } from 'rxjs';
 import { HistoryCleaningAction } from 'src/app/models/history-cleaningAction.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { CuponService } from 'src/app/services/cupon.service';
@@ -18,14 +18,15 @@ export class UpdateScoresComponent {
   cleaningHistory$!: Observable<HistoryCleaningAction[]>;
   loggedValue$!: Observable<boolean>;
   userId$!: Observable<number>;
+  userEmail$!:Observable<string>;
   accessToken$!: Observable<string>;
 
-  displayedColumnsCleaningHistory: string[] = ['beforePicture', 'afterPicture', 'score', 'date','updateScore', 'delete'];
+  displayedColumnsCleaningHistory: string[] = ['beforePicture', 'afterPicture', 'score', 'date','email','updateScore', 'delete'];
   dataSourceCleaningHistory = new MatTableDataSource<HistoryCleaningAction>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
+  @ViewChild(MatTable) table!: MatTable<any>
   constructor(
 
     private authService : AuthService,
@@ -41,6 +42,7 @@ export class UpdateScoresComponent {
       this.loggedValue$= this.authService.logged$;
       this.accessToken$ = this.authService.accessToken$;
       this.userId$ = this.authService.userId$
+      this.userEmail$= this.authService.userEmail$
       this.authService.getAllDetails();
 
        // Combine the userId$ and accessToken$ observables into a new observable
@@ -76,17 +78,21 @@ export class UpdateScoresComponent {
     updateScore(row:any) {
       this.authService.accessToken$.subscribe(accessToken => {
       const data = {
-        id: row.id, // Assuming you have an 'id' property in your row object
+        id: row.id,
         score: row.score
       };
 
       this.fileUploadService.updateScore(row,accessToken).subscribe(
         () => {
-          // Handle success, e.g., show a success message
           console.log('Score updated successfully');
+
+          this.cleaningHistory$ = this.cleaningHistory$.pipe(
+            map(items => items.filter(it => it.id !== row.id))
+          );
+          this.table.renderRows()
+
         },
         (error) => {
-          // Handle error, e.g., show an error message
           console.error('Error updating score:', error);
         }
       );
@@ -94,21 +100,28 @@ export class UpdateScoresComponent {
   });
 }
 
-deleteCleaningAction(row:any) {
+deleteCleaningAction(row: any) {
   this.authService.accessToken$.subscribe(accessToken => {
-  const id = row.id; // Assuming you have an 'id' property in your row object
+  const id = row.id;
 
-  this.fileUploadService.deleteCleaningAction(id,accessToken).subscribe(
+  this.cleaningHistory$ = this.cleaningHistory$.pipe(
+    map(items => items.filter(item => item.id !== id))
+  );
+  this.table.removeRowDef(row)
+
+  this.fileUploadService.deleteCleaningAction(id, accessToken).subscribe(
     () => {
-      // Handle success, e.g., show a success message or remove the row from the table
-      console.log('Row deleted successfully');
+      console.log("success")
     },
     (error) => {
-      // Handle error, e.g., show an error message
       console.error('Error deleting row:', error);
     }
   );
   });
+}
+
+refresh() {
+
 }
 
 }

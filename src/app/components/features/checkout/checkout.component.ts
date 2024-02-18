@@ -122,7 +122,6 @@ export class CheckoutComponent {
       this.cuponService.takeCupon(item, accessToken).subscribe(
         () => {
           // Item deleted successfully, you might want to update the cart display
-          console.log('You got the cupon for use.');
           this.authService.getAllDetails();
           this.cart$ = this.cart$.pipe(
             map(items => items.filter(it => it.id !== item.id))

@@ -106,12 +106,14 @@ import { TokenInterceptor } from './token-interceptor';
     CommonModule,
 
   ],
-  providers: [ {
-    provide: APP_INITIALIZER,
-    useFactory: (authService: AuthService) => () => authService.loadUserDataOnRefresh(),
-    deps: [AuthService],
-    multi: true,
-  },{
+  providers: [
+  //   {
+  //   provide: APP_INITIALIZER,
+  //   useFactory: (authService: AuthService) => () => authService.loadUserDataOnRefresh(),
+  //   deps: [AuthService],
+  //   multi: true,
+  // },
+  {
     provide: HTTP_INTERCEPTORS,
     useClass: TokenInterceptor,
     multi: true

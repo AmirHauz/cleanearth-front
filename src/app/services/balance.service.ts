@@ -21,6 +21,7 @@ export class BalanceService {
         const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
         return this.http.get<Balance>(this.MYSERVER + "balance/", { headers }).pipe(
           tap((balance: Balance) => {
+            console.log('update balances ', balance);
             this.updateBalances(balance.balance, balance.cartTotal);
             console.log('Response for balance:', balance.balance);
             console.log('Response for CARTTOTAL', balance.cartTotal);

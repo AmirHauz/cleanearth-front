@@ -21,6 +21,7 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
+          console.log('401')
           return this.authService.refreshAccessToken().pipe(
             switchMap(() => {
               // Retry the original request with the new access token

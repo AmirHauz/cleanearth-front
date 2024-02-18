@@ -20,6 +20,7 @@ export class BalanceSharedService {
   constructor() {}
 
   updateBalance(balance: number): void {
+    console.log('ub',balance);
     this.balanceSubject.next(balance);
   }
 

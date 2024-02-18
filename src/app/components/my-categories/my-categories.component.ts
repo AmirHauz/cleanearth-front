@@ -15,7 +15,7 @@ export class MyCategoriesComponent {
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin$=this.authService.userIsAdminl$
+    this.isAdmin$=this.authService.userIsAdmin$
 
   }
 }

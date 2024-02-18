@@ -12,7 +12,7 @@ export class AppComponent {
   constructor(private authService:AuthService){}
 
   ngOnInit(): void {
-    this.authService.loadUserDataOnRefresh();
+    // this.authService.loadUserDataOnRefresh();
   }
 }
 
