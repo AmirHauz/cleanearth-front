@@ -63,6 +63,7 @@ export class CartService {
   }
 
   get CartCount$(): Observable<number> {
+    console.log("count!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",this.cartCountSubject);
     return this.cartCountSubject.asObservable();
   }
 

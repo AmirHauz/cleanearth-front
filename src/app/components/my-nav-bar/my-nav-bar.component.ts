@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit,ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
@@ -7,6 +7,7 @@ import { AsyncPipe } from '@angular/common';
 import { Balance } from 'src/app/models/balance.model ';
 import { BalanceSharedService } from 'src/app/services/balance-shared.service';
 import { CartService } from 'src/app/services/cart.service';
+import { CartItemDisplay } from 'src/app/models/cart.model';
 
 @Component({
   selector: 'app-my-nav-bar',
@@ -25,19 +26,39 @@ export class MyNavBarComponent implements OnInit, OnDestroy {
   balanceSubscription?: Subscription;
   cartCountSubscription?:Subscription;
   counter$!:Observable<number>;
+  cart$!: Observable<CartItemDisplay[]>;
 
   constructor(
     private authService: AuthService,
     private balanceService: BalanceService,
     private balanceSharedService: BalanceSharedService,
     private cartService: CartService,
-    private cdr:ChangeDetectorRef,
+
   ) { }
 
   ngOnInit(): void {
     this.loggedValue$ = this.authService.logged$;
     this.accessToken$ = this.authService.accessToken$;
-    
+    this.authService.getAllDetails();
+    this.loggedValue$.subscribe(loggedIn => {
+      if (loggedIn) {
+        this.authService.accessToken$.subscribe(accessToken => {
+          this.authService.userId$.subscribe(userId => {
+            if (accessToken && userId) {
+              this.cart$ = this.cartService.getItems(userId, accessToken);
+              console.log("cart from nav bar XXXXXXXX",this.cart$)
+            }
+          });
+        });
+      }
+    });
+    this.cart$.subscribe((cartItems) => {
+      const count = cartItems.reduce((sum, item) => sum + item.amount, 0);
+      this.cartService.setCartCount(count);
+      console.log("countYYYY", count, cartItems);
+    });
+
+
 
     // Retrieve the user's name from local storage
     const storedUsername = localStorage.getItem('username');
